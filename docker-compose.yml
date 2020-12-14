@@ -1,0 +1,6 @@
+version: '3.8'
+services:
+  api:
+    image: userservice
+    ports:
+      - 84:8080
