@@ -2,6 +2,7 @@ package de.structuremade.ms.userservice.api.routes;
 
 import com.google.gson.Gson;
 import de.structuremade.ms.userservice.api.json.CreateUserJson;
+import de.structuremade.ms.userservice.api.json.UpdateUserJson;
 import de.structuremade.ms.userservice.api.json.answer.CreateUserResponse;
 import de.structuremade.ms.userservice.api.json.answer.GetSingleUserJson;
 import de.structuremade.ms.userservice.api.json.answer.array.GetMyUserInformationJson;
@@ -42,6 +43,18 @@ public class UserRoute {
         }
     }
 
+    @PutMapping("/update")
+    public void updateUser(@RequestBody UpdateUserJson userJson, HttpServletRequest request,HttpServletResponse response){
+        switch (userService.updateUser(userJson.getId(), userJson.getEmail(), userJson.getName())) {
+            case 0:
+                response.setStatus(HttpStatus.OK.value());
+                break;
+            case 1:
+                response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                break;
+        }
+    }
+
     @GetMapping("/get/{userid}")
     public Object getUser(@PathVariable("userid") String userid, HttpServletRequest request, HttpServletResponse response) {
         GetSingleUserJson user = userService.getUser(userid, jwtUtil.extractSpecialClaim(request.getHeader("Authorization").substring(7), "schoolid"));
@@ -71,4 +84,5 @@ public class UserRoute {
             return gson.toJson(user);
         }
     }
+
 }

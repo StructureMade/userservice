@@ -17,6 +17,7 @@ import de.structuremade.ms.userservice.util.database.repo.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -94,7 +95,7 @@ public class UserService {
         GetSingleUserJson userJson = new GetSingleUserJson(user);
         List<RoleArray> roles = new ArrayList<>();
         List<PermissionsArray> permissions = new ArrayList<>();
-        if (user.getId() == null){
+        if (user.getId() == null) {
             userJson.setId("1");
             return userJson;
         }
@@ -118,11 +119,29 @@ public class UserService {
             }
             userJson.setRoles(roles);
             return userJson;
-        }catch (Exception e){
+        } catch (Exception e) {
             return null;
         }
     }
-    public GetMyUserInformationJson getMyUserInformation(String userid, String schoolid){
+
+    public GetMyUserInformationJson getMyUserInformation(String userid, String schoolid) {
         return new GetMyUserInformationJson(getUser(userid, schoolid));
+    }
+
+    public int updateUser(String userid, String email, String name) {
+        try {
+            User user = userRepository.getOne(userid);
+            if (email.length() > 0) {
+                user.setEmail(email);
+            }
+            if (name.length() > 0) {
+                user.setName(name);
+            }
+            userRepository.save(user);
+            return 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 1;
+        }
     }
 }
