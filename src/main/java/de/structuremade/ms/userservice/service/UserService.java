@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import de.structuremade.ms.userservice.algorithm.Token;
 import de.structuremade.ms.userservice.api.json.CreateUserJson;
 import de.structuremade.ms.userservice.api.json.answer.GetSingleUserJson;
+import de.structuremade.ms.userservice.api.json.answer.array.GetMyUserInformationJson;
 import de.structuremade.ms.userservice.api.json.answer.array.PermissionsArray;
 import de.structuremade.ms.userservice.api.json.answer.array.RoleArray;
 import de.structuremade.ms.userservice.util.JWTUtil;
@@ -90,8 +91,7 @@ public class UserService {
     public GetSingleUserJson getUser(String userid, String schoolid) {
         /*Method Variables*/
         User user = userRepository.getOne(userid);
-        System.out.println(user.getId());
-        GetSingleUserJson userJson = new GetSingleUserJson();
+        GetSingleUserJson userJson = new GetSingleUserJson(user);
         List<RoleArray> roles = new ArrayList<>();
         List<PermissionsArray> permissions = new ArrayList<>();
         if (user.getId() == null){
@@ -100,12 +100,6 @@ public class UserService {
         }
         /*End of Variables*/
         try {
-            userJson.setId(user.getId());
-            userJson.setEmail(user.getEmail());
-            userJson.setFirstname(user.getFirstname());
-            userJson.setName(user.getName());
-            userJson.setSchools(user.getSchools());
-            userJson.setCreationDate(user.getCreationDate());
             for (Role role : user.getRoles()) {
                 RoleArray roleArray = new RoleArray();
                 if (role.getSchool().getId().equals(schoolid)) {
@@ -123,10 +117,12 @@ public class UserService {
                 permissions.clear();
             }
             userJson.setRoles(roles);
-            userJson.setVerified(user.isVerified());
             return userJson;
         }catch (Exception e){
             return null;
         }
+    }
+    public GetMyUserInformationJson getMyUserInformation(String userid, String schoolid){
+        return new GetMyUserInformationJson(getUser(userid, schoolid));
     }
 }
