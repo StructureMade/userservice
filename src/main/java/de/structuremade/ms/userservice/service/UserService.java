@@ -1,8 +1,15 @@
 package de.structuremade.ms.userservice.service;
 
+import com.google.gson.Gson;
 import de.structuremade.ms.userservice.algorithm.Token;
 import de.structuremade.ms.userservice.api.json.CreateUserJson;
+import de.structuremade.ms.userservice.api.json.answer.GetSingleUserJson;
+import de.structuremade.ms.userservice.api.json.answer.array.PermissionsArray;
+import de.structuremade.ms.userservice.api.json.answer.array.RoleArray;
 import de.structuremade.ms.userservice.util.JWTUtil;
+import de.structuremade.ms.userservice.util.database.entity.Permissions;
+import de.structuremade.ms.userservice.util.database.entity.Role;
+import de.structuremade.ms.userservice.util.database.entity.School;
 import de.structuremade.ms.userservice.util.database.entity.User;
 import de.structuremade.ms.userservice.util.database.repo.SchoolRepository;
 import de.structuremade.ms.userservice.util.database.repo.UserRepository;
@@ -10,7 +17,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Calendar;
 
 @Service
@@ -53,9 +63,9 @@ public class UserService {
         return user;
     }
 
-    public int create(CreateUserJson userJson, String jwt){
-        try{
-            if (userRepository.existsByEmail(userJson.getEmail())){
+    public int create(CreateUserJson userJson, String jwt) {
+        try {
+            if (userRepository.existsByEmail(userJson.getEmail())) {
                 return 1;
             }
             String schoolid = jwtUtil.extractSpecialClaim(jwt, "schoolid");
@@ -69,11 +79,54 @@ public class UserService {
             user.setCreationDate(Calendar.getInstance().getTime());
             createToken(user);
             userRepository.save(user);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return 2;
         }
         return 0;
     }
 
+    @Transactional
+    public GetSingleUserJson getUser(String userid, String schoolid) {
+        /*Method Variables*/
+        User user = userRepository.getOne(userid);
+        System.out.println(user.getId());
+        GetSingleUserJson userJson = new GetSingleUserJson();
+        List<RoleArray> roles = new ArrayList<>();
+        List<PermissionsArray> permissions = new ArrayList<>();
+        if (user.getId() == null){
+            userJson.setId("1");
+            return userJson;
+        }
+        /*End of Variables*/
+        try {
+            userJson.setId(user.getId());
+            userJson.setEmail(user.getEmail());
+            userJson.setFirstname(user.getFirstname());
+            userJson.setName(user.getName());
+            userJson.setSchools(user.getSchools());
+            userJson.setCreationDate(user.getCreationDate());
+            for (Role role : user.getRoles()) {
+                RoleArray roleArray = new RoleArray();
+                if (role.getSchool().getId().equals(schoolid)) {
+                    roleArray.setId(role.getId());
+                    roleArray.setName(role.getName());
+                    for (Permissions perms : role.getPermissions()) {
+                        PermissionsArray permissionsArray = new PermissionsArray();
+                        permissionsArray.setId(perms.getId());
+                        permissionsArray.setName(perms.getName());
+                        permissions.add(permissionsArray);
+                    }
+                    roleArray.setPermissions(permissions);
+                }
+                roles.add(roleArray);
+                permissions.clear();
+            }
+            userJson.setRoles(roles);
+            userJson.setVerified(user.isVerified());
+            return userJson;
+        }catch (Exception e){
+            return null;
+        }
+    }
 }
