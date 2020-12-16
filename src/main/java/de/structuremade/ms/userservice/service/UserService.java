@@ -3,10 +3,12 @@ package de.structuremade.ms.userservice.service;
 import com.google.gson.Gson;
 import de.structuremade.ms.userservice.algorithm.Token;
 import de.structuremade.ms.userservice.api.json.CreateUserJson;
+import de.structuremade.ms.userservice.api.json.answer.GetAllUserJson;
 import de.structuremade.ms.userservice.api.json.answer.GetSingleUserJson;
 import de.structuremade.ms.userservice.api.json.answer.array.GetMyUserInformationJson;
 import de.structuremade.ms.userservice.api.json.answer.array.PermissionsArray;
 import de.structuremade.ms.userservice.api.json.answer.array.RoleArray;
+import de.structuremade.ms.userservice.api.json.answer.array.UserInformationsJson;
 import de.structuremade.ms.userservice.util.JWTUtil;
 import de.structuremade.ms.userservice.util.database.entity.Permissions;
 import de.structuremade.ms.userservice.util.database.entity.Role;
@@ -144,4 +146,27 @@ public class UserService {
             return 1;
         }
     }
+
+    public GetAllUserJson getaAllUser(String schoolid) {
+        try {
+            if (schoolid.length() > 0) {
+                List<User> users = userRepository.findAllBySchools(schoolRepository.getOne(schoolid));
+                List<UserInformationsJson> userInfos = new ArrayList<>();
+                for (User user : users) {
+                    UserInformationsJson userInfo = new UserInformationsJson();
+                    userInfo.setId(user.getId());
+                    userInfo.setFirstname(user.getFirstname());
+                    userInfo.setName(user.getName());
+                    userInfo.setEmail(user.getEmail());
+                    userInfos.add(userInfo);
+                }
+                return new GetAllUserJson(userInfos);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        return null;
+    }
 }
+

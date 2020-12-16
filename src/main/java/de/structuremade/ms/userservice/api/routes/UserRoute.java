@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import de.structuremade.ms.userservice.api.json.CreateUserJson;
 import de.structuremade.ms.userservice.api.json.UpdateUserJson;
 import de.structuremade.ms.userservice.api.json.answer.CreateUserResponse;
+import de.structuremade.ms.userservice.api.json.answer.GetAllUserJson;
 import de.structuremade.ms.userservice.api.json.answer.GetSingleUserJson;
 import de.structuremade.ms.userservice.api.json.answer.array.GetMyUserInformationJson;
 import de.structuremade.ms.userservice.service.UserService;
@@ -44,7 +45,7 @@ public class UserRoute {
     }
 
     @PutMapping("/update")
-    public void updateUser(@RequestBody UpdateUserJson userJson, HttpServletRequest request,HttpServletResponse response){
+    public void updateUser(@RequestBody UpdateUserJson userJson, HttpServletRequest request, HttpServletResponse response) {
         switch (userService.updateUser(userJson.getId(), userJson.getEmail(), userJson.getName())) {
             case 0:
                 response.setStatus(HttpStatus.OK.value());
@@ -72,7 +73,7 @@ public class UserRoute {
 
     @GetMapping("/getme")
     public Object getMe(HttpServletRequest request, HttpServletResponse response) {
-         GetMyUserInformationJson user = userService.getMyUserInformation(jwtUtil.extractIdOrEmail(request.getHeader("Authorization").substring(7)), jwtUtil.extractSpecialClaim((request.getHeader("Authorization").substring(7)), "schoolid"));
+        GetMyUserInformationJson user = userService.getMyUserInformation(jwtUtil.extractIdOrEmail(request.getHeader("Authorization").substring(7)), jwtUtil.extractSpecialClaim((request.getHeader("Authorization").substring(7)), "schoolid"));
         if (user.getId().equals("1")) {
             response.setStatus(HttpStatus.NOT_FOUND.value());
             return null;
@@ -82,6 +83,18 @@ public class UserRoute {
         } else {
             response.setStatus(HttpStatus.OK.value());
             return gson.toJson(user);
+        }
+    }
+
+    @GetMapping("/getall")
+    public Object getAllUser(HttpServletRequest request, HttpServletResponse response) {
+        GetAllUserJson getAllUserJson = userService.getaAllUser(jwtUtil.extractSpecialClaim(request.getHeader("Authorization").substring(7), "schoolid"));
+        if (getAllUserJson != null) {
+            response.setStatus(HttpStatus.OK.value());
+            return gson.toJson(getAllUserJson);
+        }else {
+            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            return null;
         }
     }
 
