@@ -1,7 +1,6 @@
 package de.structuremade.ms.userservice.service;
 
 import com.google.gson.Gson;
-import de.structuremade.ms.userservice.algorithm.Token;
 import de.structuremade.ms.userservice.api.json.CreateUserJson;
 import de.structuremade.ms.userservice.api.json.answer.GetAllUserJson;
 import de.structuremade.ms.userservice.api.json.answer.GetSingleUserJson;
@@ -10,9 +9,9 @@ import de.structuremade.ms.userservice.api.json.answer.array.PermissionsArray;
 import de.structuremade.ms.userservice.api.json.answer.array.RoleArray;
 import de.structuremade.ms.userservice.api.json.answer.array.UserInformationsJson;
 import de.structuremade.ms.userservice.util.JWTUtil;
+import de.structuremade.ms.userservice.algorithm.Token;
 import de.structuremade.ms.userservice.util.database.entity.Permissions;
 import de.structuremade.ms.userservice.util.database.entity.Role;
-import de.structuremade.ms.userservice.util.database.entity.School;
 import de.structuremade.ms.userservice.util.database.entity.User;
 import de.structuremade.ms.userservice.util.database.repo.SchoolRepository;
 import de.structuremade.ms.userservice.util.database.repo.UserRepository;
@@ -34,6 +33,7 @@ public class UserService {
 
     @Autowired
     UserRepository userRepository;
+
 
     @Autowired
     SchoolRepository schoolRepository;
@@ -84,6 +84,7 @@ public class UserService {
             createToken(user);
             userRepository.save(user);
         } catch (Exception e) {
+            LOGGER.error(e.getLocalizedMessage());
             e.printStackTrace();
             return 2;
         }
@@ -130,24 +131,7 @@ public class UserService {
         return new GetMyUserInformationJson(getUser(userid, schoolid));
     }
 
-    public int updateUser(String userid, String email, String name) {
-        try {
-            User user = userRepository.getOne(userid);
-            if (email.length() > 0) {
-                user.setEmail(email);
-            }
-            if (name.length() > 0) {
-                user.setName(name);
-            }
-            userRepository.save(user);
-            return 0;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return 1;
-        }
-    }
-
-    public GetAllUserJson getaAllUser(String schoolid) {
+    public GetAllUserJson getAllUser(String schoolid) {
         try {
             if (schoolid.length() > 0) {
                 List<User> users = userRepository.findAllBySchools(schoolRepository.getOne(schoolid));

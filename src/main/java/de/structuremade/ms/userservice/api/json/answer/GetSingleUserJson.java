@@ -23,7 +23,7 @@ public class GetSingleUserJson {
     private List<School> schools;
     private List<RoleArray> roles;
 
-    public GetSingleUserJson(User user){
+    public GetSingleUserJson(User user) {
         this.id = user.getId();
         this.email = user.getEmail();
         this.firstname = user.getFirstname();

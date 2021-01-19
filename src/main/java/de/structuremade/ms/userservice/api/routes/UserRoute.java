@@ -2,8 +2,6 @@ package de.structuremade.ms.userservice.api.routes;
 
 import com.google.gson.Gson;
 import de.structuremade.ms.userservice.api.json.CreateUserJson;
-import de.structuremade.ms.userservice.api.json.UpdateUserJson;
-import de.structuremade.ms.userservice.api.json.answer.CreateUserResponse;
 import de.structuremade.ms.userservice.api.json.answer.GetAllUserJson;
 import de.structuremade.ms.userservice.api.json.answer.GetSingleUserJson;
 import de.structuremade.ms.userservice.api.json.answer.array.GetMyUserInformationJson;
@@ -15,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/service/user")
@@ -39,18 +36,6 @@ public class UserRoute {
                 response.setStatus(HttpStatus.BAD_REQUEST.value());
                 break;
             case 2:
-                response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-                break;
-        }
-    }
-
-    @PutMapping("/update")
-    public void updateUser(@RequestBody UpdateUserJson userJson, HttpServletRequest request, HttpServletResponse response) {
-        switch (userService.updateUser(userJson.getId(), userJson.getEmail(), userJson.getName())) {
-            case 0:
-                response.setStatus(HttpStatus.OK.value());
-                break;
-            case 1:
                 response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
                 break;
         }
@@ -88,11 +73,11 @@ public class UserRoute {
 
     @GetMapping("/getall")
     public Object getAllUser(HttpServletRequest request, HttpServletResponse response) {
-        GetAllUserJson getAllUserJson = userService.getaAllUser(jwtUtil.extractSpecialClaim(request.getHeader("Authorization").substring(7), "schoolid"));
+        GetAllUserJson getAllUserJson = userService.getAllUser(jwtUtil.extractSpecialClaim(request.getHeader("Authorization").substring(7), "schoolid"));
         if (getAllUserJson != null) {
             response.setStatus(HttpStatus.OK.value());
             return gson.toJson(getAllUserJson);
-        }else {
+        } else {
             response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
             return null;
         }
