@@ -9,8 +9,6 @@ import java.util.List;
 @Getter
 @Setter
 public class CreateUserJson {
-    @NotNull(message = "Email is required")
-    private String email;
     @NotNull(message = "Firstname is required")
     private String firstname;
     @NotNull(message = "Name is required")
