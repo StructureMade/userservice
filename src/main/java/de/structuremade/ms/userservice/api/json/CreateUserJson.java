@@ -13,5 +13,6 @@ public class CreateUserJson {
     private String firstname;
     @NotNull(message = "Name is required")
     private String name;
+    private String abbreviation;
     private List<String> roles;
 }

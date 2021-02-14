@@ -33,7 +33,7 @@ public class UserRoute {
                 response.setStatus(HttpStatus.CREATED.value());
                 break;
             case 1:
-                response.setStatus(HttpStatus.BAD_REQUEST.value());
+                response.setStatus(HttpStatus.UNAUTHORIZED.value());
                 break;
             case 2:
                 response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());

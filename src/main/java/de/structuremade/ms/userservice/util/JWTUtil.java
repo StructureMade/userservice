@@ -1,10 +1,8 @@
 package de.structuremade.ms.userservice.util;
 
-import de.structuremade.ms.userservice.util.database.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.spec.SecretKeySpec;

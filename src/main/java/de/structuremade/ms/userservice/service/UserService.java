@@ -67,6 +67,7 @@ public class UserService {
 
     public int create(CreateUserJson userJson, String jwt) {
         try {
+            if (jwtUtil.isTokenExpired(jwt)) return 1;
             String schoolid = jwtUtil.extractSpecialClaim(jwt, "schoolid");
             User user = new User();
             user.setFirstname(userJson.getFirstname());

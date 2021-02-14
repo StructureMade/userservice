@@ -5,6 +5,8 @@ import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "schools", schema = "services", indexes = {
@@ -22,4 +24,12 @@ public class School {
 
     @Column
     private String name;
+
+    @Column
+    private String email;
+
+    @OneToMany(targetEntity = Role.class, orphanRemoval = true)
+    @JoinColumn(name = "school", foreignKey = @ForeignKey(name = "fk_school"))
+    private List<Role> roles = new ArrayList<>();
+
 }
