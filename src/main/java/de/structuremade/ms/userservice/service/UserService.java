@@ -56,7 +56,7 @@ public class UserService {
             }
             /*Check if code is already used and if not add it to user*/
             if (!(codeAlreadyUsed = userRepository.existsByToken((token = Token.generate(lenght))))) {
-                LOGGER.info("ActivationCode is valid was set [User]");
+                LOGGER.info("ActivationCode is valid was set");
                 user.setToken(token);
             } else {
                 tries++;
@@ -118,6 +118,7 @@ public class UserService {
             userJson.setRoles(roles);
             return userJson;
         } catch (Exception e) {
+            LOGGER.error("Could not get User", e.fillInStackTrace());
             return null;
         }
     }
@@ -142,7 +143,7 @@ public class UserService {
                 return new GetAllUserJson(userInfos);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("Could not get users", e.fillInStackTrace());
             return null;
         }
         return null;
